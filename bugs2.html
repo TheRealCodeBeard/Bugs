@@ -15,11 +15,9 @@
 		<script type="text/javascript" src="entity_base.js"></script>
 		<script type="text/javascript" src="plant.js"></script>
 		<script type="text/javascript" src="lamp.js"></script>
-		<!--Rotation Components-->
-		<script type="text/javascript" src="rotation_components.js"></script>
-		<!--Energy Components-->
-		<script type="text/javascript" src="energy_components.js"></script>
 		<!--Components-->
+		<script type="text/javascript" src="rotation_components.js"></script>
+		<script type="text/javascript" src="energy_components.js"></script>
 		<script type="text/javascript">
 
 			var Legs = function(speed) {
@@ -81,7 +79,6 @@
 					else this.lamp.off();
 				}
 			};
-
 
 		</script>
 		<!--Composed Entities-->
@@ -193,21 +190,6 @@
 					world.entities.perform("tick");
 				},100);
 			};
-
-			/*
-			//requestAnimationFrame (approx 60fps) is preferred as a method lately
-			//but it needs some browser specific messing about. So I am sticking to interval for now.
-			var anim = function(){
-				setTimeout(function() {
-					world.entities.perform("look");
-					world.entities.perform("sense");
-					world.entities.perform("move");
-					world.entities.perform("grow");
-					mozRequestAnimationFrame(anim);
-				},50);
-			};
-			anim();
-			*/
 
 			document.onkeypress  = function(event){
 				if(event.which===112)world.addPlant();//p
