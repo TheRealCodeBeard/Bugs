@@ -18,69 +18,8 @@
 		<!--Components-->
 		<script type="text/javascript" src="rotation_components.js"></script>
 		<script type="text/javascript" src="energy_components.js"></script>
-		<script type="text/javascript">
-
-			var Legs = function(speed) {
-				this.speed = speed;
-				this.cost = 0.1 * speed;
-			};
-
-			Legs.prototype.physical = function(){
-				var g = drawing.getAGroup();
-				var col = "yellow";
-				g.appendChild(drawing.getCircle(0,-7,3,col));
-				g.appendChild(drawing.getCircle(0, 7,3,col));
-				return g;
-			};
-
-			Legs.prototype.act = function(entity){
-				entity.rotation = world.correctRotationForBounds(entity.x,entity.y,entity.size,entity.rotation);
-				if(this.speed){
-					entity.y+=this.speed * Math.sin(support.getRad(entity.rotation));
-					entity.x+=this.speed * Math.cos(support.getRad(entity.rotation));					
-				}
-			};
-
-
-			var Eyes = function(radius,angle){
-				this.radius = radius;
-				this.angle = angle;
-				this.lamp = new Lamp();
-				this.cost = 0.05;
-			};
-
-			Eyes.prototype.addSee = function(see){
-				this.see = see;
-				return this;
-			}
-
-			Eyes.prototype.physical = function(){
-				var g = drawing.getAGroup();
-				g.appendChild(drawing.getCone(0,0,this.radius,this.angle));
-				g.appendChild(this.lamp.getElement());
-				this.text = drawing.getText(-8,14,"0");
-				g.appendChild(this.text); 
-				return g;
-			};
-
-			Eyes.prototype.act = function(entity){
-				if(this.see){
-					var agent = {
-						x:entity.x,
-						y:entity.y,
-						angle:this.angle,
-						radius:this.radius,
-						id:entity.id,
-						rotation:entity.rotation
-					};
-					entity.seen = this.see(agent);
-					this.text.textContent = entity.seen.length;
-					if(entity.seen.length) this.lamp.on("red");
-					else this.lamp.off();
-				}
-			};
-
-		</script>
+		<script type="text/javascript" src="legs.js"></script>
+		<script type="text/javascript" src="eyes.js"></script>
 		<!--Composed Entities-->
 		<script type="text/javascript">
 
@@ -131,7 +70,6 @@
 				svg.appendChild(plantLayer);
 
 				var postDecay = function(x,y){
-					return addPlant(x,y,75);
 				};
 
 				var addPlant = function(x,y,e){
