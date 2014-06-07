@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<link rel="shortcut icon" href="bug.gif" />
+		<meta charset="UTF-8"/>
+		<title>Bugs 2!</title>
+		<link rel="stylesheet" type="text/css" href="main.css">
+		<!--static objects: dupport, Drawing, world-->
+		<script type="text/javascript" src="support.js"></script>
+		<script type="text/javascript" src="drawing.js"></script>
+		<script type="text/javascript" src="world.js"></script>
+		<!--Array extensions-->
+		<script type="text/javascript" src="array_extensions.js"></script>
+		<!--Plants-->
+		<script type="text/javascript" src="plant.js"></script>
+		<!--Rotation Components-->
+		<script type="text/javascript" src="rotation_components.js"></script>
+		<!--Energy Components-->
+		<script type="text/javascript" src="energy_components.js"></script>
+		<!--Components-->
+		<script type="text/javascript">
+
+			var Legs = function(speed) {
+				this.speed = speed;
+				this.cost = 0.1 * speed;
+			};
+
+			Legs.prototype.physical = function(){
+				var g = drawing.getAGroup();
+				var col = "yellow";
+				g.appendChild(drawing.getCircle(0,-7,3,col));
+				g.appendChild(drawing.getCircle(0, 7,3,col));
+				return g;
+			};
+
+			Legs.prototype.act = function(entity){
+				entity.rotation = world.correctRotationForBounds(entity.x,entity.y,entity.size,entity.rotation);
+				if(this.speed){
+					entity.y+=this.speed * Math.sin(support.getRad(entity.rotation));
+					entity.x+=this.speed * Math.cos(support.getRad(entity.rotation));					
+				}
+			};
+
+
+			var Eyes = function(radius,angle){
+				this.radius = radius;
+				this.angle = angle;
+				this.lamp = new Lamp();
+				this.cost = 0.05;
+			};
+
+			Eyes.prototype.addSee = function(see){
+				this.see = see;
+				return this;
+			}
+
+			Eyes.prototype.physical = function(){
+				var g = drawing.getAGroup();
+				g.appendChild(drawing.getCone(0,0,this.radius,this.angle));
+				g.appendChild(this.lamp.getElement());
+				this.text = drawing.getText(-8,14,"0");
+				g.appendChild(this.text); 
+				return g;
+			};
+
+			Eyes.prototype.act = function(entity){
+				if(this.see){
+					var agent = {
+						x:entity.x,
+						y:entity.y,
+						angle:this.angle,
+						radius:this.radius,
+						id:entity.id,
+						rotation:entity.rotation
+					};
+					entity.seen = this.see(agent);
+					this.text.textContent = entity.seen.length;
+					if(entity.seen.length) this.lamp.on("red");
+					else this.lamp.off();
+				}
+			};
+
+
+		</script>
+		<!--Composed Entities-->
+		<script type="text/javascript">
+
+			var ComposedEntity = function(x,y,parts){
+				var me = this;
+				me.id = support.getID();
+				me.x = x;
+				me.y = y;
+				me.rotation = 0;
+				me.size = 7;
+				me.parts = parts;
+			};
+
+			ComposedEntity.prototype.getGroup = function(){
+				var me = this;
+				var idloc = {x:-me.size-2,y:-me.size-2};
+
+				me.group = drawing.getAGroup();
+				me.group.appendChild(drawing.getCircle(0,0,me.size,"white"));
+				me.group.appendChild(drawing.getText(idloc.x,idloc.y,me.id,"gray"));
+
+				var addPart = function(p) {me.group.appendChild(me.parts[p].physical(me))};
+				for(var i=0;i<me.parts.length;i++){addPart(i);}
+
+				me.update();
+				return me.group;
+			};
+
+			ComposedEntity.prototype.update = function(){
+				var me = this;
+				me.group.setAttribute("transform","translate("+me.x+","+me.y+"),rotate("+me.rotation+")");
+			};
+
+			ComposedEntity.prototype.tick = function(){
+				var me = this;
+				me.parts.performOn("act",me);
+				me.update();
+			};
+
+		</script>
+		<!--Main-->
+		<script type="text/javascript">
+
+			var setup = function(){
+				var svg = document.getElementById("svg");
+				svg.appendChild(world.getNotes());
+				var plantLayer = drawing.getAGroup();
+				svg.appendChild(plantLayer);
+
+				var postDecay = function(x,y){
+					return addPlant(x,y,75);
+				};
+
+				var addPlant = function(x,y,e){
+					if(world.entitiesCount()<100){
+						var p = null;
+						if(x&&y&&e)p = new Plant(x,y,e);
+						else p = new Plant(world.rndX(),world.rndY(),Math.random()*750);
+						p.addKill(world.kill);
+						p.spawn = addPlant;
+						world.addEntity(p);
+						plantLayer.appendChild(p.getGroup());
+						return p;
+					} else console.log("Plant not added: too many entities!");
+					return null;
+				};
+
+				var addMoverLooker = function(e){
+					if(!e)e=Math.random()*500;
+					var n = new LookerMover(
+						world.rndX(),//10+Math.random()*610,//x
+						world.rndY(),// 10+Math.random()*450,//y
+						Math.random()*360,//rotation
+						1+Math.random()*10,//speed
+						5,//rs
+						40,//v
+						70,//vl
+						e//energy
+						).addSee(world.getInView).addKill(world.kill);
+					n.spawn = addMoverLooker;
+					world.addEntity(n);
+					svg.appendChild(n.getGroup());
+				};
+
+				var addBall = function(){
+					svg.appendChild(world.addEntity(new Ball(100,100,0,5,5)).getGroup());
+				};
+				
+				var addMover = function(){
+					svg.appendChild(world.addEntity(new Mover(300,300,10,2)).getGroup());
+				};
+
+				var addAvoider = function(){
+					svg.appendChild(world.addEntity(new Avoider(0,240)
+													.addSee(world.getInView)
+													.addSense(world.getProximate))
+													.getGroup());					
+				};
+
+				var addLooker = function(){
+					var currentSpeed = 0;
+					var speeds = [2,5,7,8,10];
+					var getNextSpeed = function(){
+						var next = speeds[currentSpeed];
+						currentSpeed+=1;
+						if(currentSpeed>=speeds.length)currentSpeed=0;
+						return next;
+					};
+					return function(){
+						svg.appendChild(world.addEntity(new Looker(world.rndX(),world.rndY(),getNextSpeed()).addSee(world.getInView)).getGroup());
+					};
+				}();
+
+				var addSensor = function(){
+					svg.appendChild(world.addEntity(new Sensor(world.rndX(),world.rndY())).getGroup());
+				};
+
+				var addComposedEntity1 = function(){
+					var parts = [
+						new RotateAwayFromSeen(5),//new RandomRotationComponent(3),//new SteadyRotationComponent(1),
+						new Legs(1),
+						new Eyes(60,30).addSee(world.getInView),
+						new InfiniteEnergy()
+					];
+					svg.appendChild(world.addEntity(new ComposedEntity(world.rndX(),world.rndY(),parts)).getGroup());
+				};
+
+				var addComposedEntity2 = function(){
+					var parts = [
+						new RotateTowardsSeen(10),
+						new Legs(2),
+						new Eyes(60,30).addSee(world.getInView),
+						new ComponentEnergy(200)//new InfiniteEnergy()//new DecreasingEnergy(1000)
+					];
+					var ce = new ComposedEntity(world.rndX(),world.rndY(),parts);
+					ce.die = world.kill;
+					svg.appendChild(world.addEntity(ce).getGroup());
+				};
+
+				world.postDecay = postDecay;
+				world.addBug = addMoverLooker;
+				world.addPlant = addPlant;
+				world.addBall = addBall;
+				world.addMover = addMover;
+				world.addAvoider = addAvoider;
+				world.addLooker = addLooker;
+				world.addSensor = addSensor;
+				world.addComposedEntity1 = addComposedEntity1;
+				world.addComposedEntity2 = addComposedEntity2;
+			};
+
+			var go = function(){
+
+				setup();
+
+				//the below should be one tick, not a set.
+				//The entity should call, internally, it's composes sensors
+				setInterval(function(){
+					world.entities.perform("look");
+					world.entities.perform("sense");
+					world.entities.perform("move");
+					world.entities.perform("grow");
+					world.entities.perform("tick");
+				},100);
+			};
+
+			/*
+			//requestAnimationFrame (approx 60fps) is preferred as a method lately
+			//but it needs some browser specific messing about. So I am sticking to interval for now.
+			var anim = function(){
+				setTimeout(function() {
+					world.entities.perform("look");
+					world.entities.perform("sense");
+					world.entities.perform("move");
+					world.entities.perform("grow");
+					mozRequestAnimationFrame(anim);
+				},50);
+			};
+			anim();
+			*/
+
+			document.onkeypress  = function(event){
+				if(event.which===97)world.addAvoider();//a
+				else if(event.which===98)world.addBug();//b
+				else if(event.which===112)world.addPlant();//p
+				else if(event.which===113)world.addBall();//q
+				else if(event.which===109)world.addMover();//m
+				else if(event.which===108)world.addLooker();//l
+				else if(event.which===115)world.addSensor();//s
+				else if(event.which===99) world.addComposedEntity1();//c
+				else if(event.which===118) world.addComposedEntity2();//v
+				else console.log(event.which);
+			};
+
+		</script>
+	</head>
+	<body onload="go();" >
+		<svg id="svg" width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"></svg>
+		<img src="bug.png"/>
+	</body>
+</html>
