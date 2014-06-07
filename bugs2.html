@@ -12,7 +12,9 @@
 		<!--Array extensions-->
 		<script type="text/javascript" src="array_extensions.js"></script>
 		<!--Plants-->
+		<script type="text/javascript" src="entity_base.js"></script>
 		<script type="text/javascript" src="plant.js"></script>
+		<script type="text/javascript" src="lamp.js"></script>
 		<!--Rotation Components-->
 		<script type="text/javascript" src="rotation_components.js"></script>
 		<!--Energy Components-->
@@ -149,56 +151,6 @@
 					return null;
 				};
 
-				var addMoverLooker = function(e){
-					if(!e)e=Math.random()*500;
-					var n = new LookerMover(
-						world.rndX(),//10+Math.random()*610,//x
-						world.rndY(),// 10+Math.random()*450,//y
-						Math.random()*360,//rotation
-						1+Math.random()*10,//speed
-						5,//rs
-						40,//v
-						70,//vl
-						e//energy
-						).addSee(world.getInView).addKill(world.kill);
-					n.spawn = addMoverLooker;
-					world.addEntity(n);
-					svg.appendChild(n.getGroup());
-				};
-
-				var addBall = function(){
-					svg.appendChild(world.addEntity(new Ball(100,100,0,5,5)).getGroup());
-				};
-				
-				var addMover = function(){
-					svg.appendChild(world.addEntity(new Mover(300,300,10,2)).getGroup());
-				};
-
-				var addAvoider = function(){
-					svg.appendChild(world.addEntity(new Avoider(0,240)
-													.addSee(world.getInView)
-													.addSense(world.getProximate))
-													.getGroup());					
-				};
-
-				var addLooker = function(){
-					var currentSpeed = 0;
-					var speeds = [2,5,7,8,10];
-					var getNextSpeed = function(){
-						var next = speeds[currentSpeed];
-						currentSpeed+=1;
-						if(currentSpeed>=speeds.length)currentSpeed=0;
-						return next;
-					};
-					return function(){
-						svg.appendChild(world.addEntity(new Looker(world.rndX(),world.rndY(),getNextSpeed()).addSee(world.getInView)).getGroup());
-					};
-				}();
-
-				var addSensor = function(){
-					svg.appendChild(world.addEntity(new Sensor(world.rndX(),world.rndY())).getGroup());
-				};
-
 				var addComposedEntity1 = function(){
 					var parts = [
 						new RotateAwayFromSeen(5),//new RandomRotationComponent(3),//new SteadyRotationComponent(1),
@@ -212,7 +164,7 @@
 				var addComposedEntity2 = function(){
 					var parts = [
 						new RotateTowardsSeen(10),
-						new Legs(2),
+						new Legs(3),
 						new Eyes(60,30).addSee(world.getInView),
 						new ComponentEnergy(200)//new InfiniteEnergy()//new DecreasingEnergy(1000)
 					];
@@ -222,13 +174,7 @@
 				};
 
 				world.postDecay = postDecay;
-				world.addBug = addMoverLooker;
 				world.addPlant = addPlant;
-				world.addBall = addBall;
-				world.addMover = addMover;
-				world.addAvoider = addAvoider;
-				world.addLooker = addLooker;
-				world.addSensor = addSensor;
 				world.addComposedEntity1 = addComposedEntity1;
 				world.addComposedEntity2 = addComposedEntity2;
 			};
@@ -264,13 +210,7 @@
 			*/
 
 			document.onkeypress  = function(event){
-				if(event.which===97)world.addAvoider();//a
-				else if(event.which===98)world.addBug();//b
-				else if(event.which===112)world.addPlant();//p
-				else if(event.which===113)world.addBall();//q
-				else if(event.which===109)world.addMover();//m
-				else if(event.which===108)world.addLooker();//l
-				else if(event.which===115)world.addSensor();//s
+				if(event.which===112)world.addPlant();//p
 				else if(event.which===99) world.addComposedEntity1();//c
 				else if(event.which===118) world.addComposedEntity2();//v
 				else console.log(event.which);
@@ -280,6 +220,5 @@
 	</head>
 	<body onload="go();" >
 		<svg id="svg" width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"></svg>
-		<img src="bug.png"/>
 	</body>
 </html>

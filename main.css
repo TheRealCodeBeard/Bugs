@@ -1,0 +1,29 @@
+svg
+{
+	border:solid 1px black;
+	background-color: #EFE;
+	width:640px;
+	height:480px;
+}
+#svg2
+{
+	background-color: #FFF;
+	width:240px;
+	height:200px;	
+}
+button
+{
+	display:block;
+	border:solid 1px black;
+	margin:1px;
+	border-radius: 2px;
+}
+button:hover
+{
+	background-color: #444400;
+	color:white;
+}
+.righty
+{
+	display: inline-block;
+}
