@@ -57,26 +57,20 @@ Plant.prototype.decay = function(){
 };
 
 Plant.prototype.grow = function(){
-	/*
-		Need to add a proximity check here.
-		Make plants only seed in close by empty spaces.
-		So there are patches of plants, rather than random placements.
-		Should be able to use the angle and proximity functions to get the data back
-			Send out a prox request, then test the angle of each one.
-		Could also only make plants grown fast when there are less plants in prox.
-			basically, more plants: slowers growth speed.
-	*/
 	var me = this;
 	me.age++;
 	me.ageText.textContent=Math.round((me.age/365)*10)/10;
+	
 	var change = 0.5;
 	if(me.energy<100)change=0.1;
 	else if(me.energy>300)change = 0.75;
 	me.changeEnergy(change);
-	if(me.energy>750){
+
+	if(me.energy>750 && me.age>365){//over a year old and energetic
 		var childEnergy = Math.random()*me.energy;
 		me.changeEnergy(-(childEnergy/2));
-		me.spawn(Math.random()*(640*0.9),Math.random()*(480*0.9),childEnergy);
+		me.seed(me,childEnergy);
+		//me.spawn(Math.random()*(640*0.9),Math.random()*(480*0.9),childEnergy);
 	}
 };
 

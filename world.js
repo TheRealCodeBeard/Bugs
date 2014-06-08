@@ -67,6 +67,18 @@ var world = function(){
 		rndY:function(){
 			return 15+(Math.random()*(maxY-30));
 		},
+		rndNear:function(x,y,d){
+			var xcoin = Math.random()>0.5;
+			var ycoin = Math.random()>0.5;
+			var ox = Math.random()*d;
+			if(xcoin) ox = -ox;
+			var oy = Math.random()*d;
+			if(ycoin) oy = -oy;
+			return {
+				x:x+ox,
+				y:y+oy
+			};
+		},
 		postDecay:null,
 		kill:function(element,doPostDecay){
 			var g = element.group;

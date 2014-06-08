@@ -37,6 +37,11 @@
 				var postDecay = function(x,y){
 				};
 
+				var addSeed = function(plant,energy){
+					var loc = world.rndNear(plant.x,plant.y,plant.size*3);
+					addPlant(loc.x,loc.y,energy);
+				};
+
 				var addPlant = function(x,y,e){
 					if(world.entitiesCount()<100){
 						var p = null;
@@ -44,6 +49,7 @@
 						else p = new Plant(world.rndX(),world.rndY(),Math.random()*750);
 						p.addKill(world.kill);
 						p.spawn = addPlant;
+						p.seed = addSeed;
 						world.addEntity(p);
 						plantLayer.appendChild(p.getGroup());
 						return p;
@@ -51,9 +57,7 @@
 					return null;
 				};
 
-				//add mouth part - that bite
-
-				var addComposedEntity1 = function(){
+				var addScardyCat = function(){
 					var legs = new Legs(1);
 					var brain = new Brain().addRational(function(entity){
 															if(entity.sensed.length) legs.speed = 6;
@@ -70,7 +74,7 @@
 					svg.appendChild(world.addEntity(new ComposedEntity(world.rndX(),world.rndY(),parts)).getGroup());
 				};
 
-				var addComposedEntity2 = function(){
+				var addHungry = function(){
 					var appetite = 110;
 					var energy = new ComponentEnergy(200);
 					var mouth = new Mouth().addSee(world.getInView);
@@ -99,7 +103,7 @@
 					svg.appendChild(world.addEntity(ce).getGroup());
 				};
 
-				var addComposedEntity3 = function(){
+				var addSentinal = function(){
 					var parts = [
 						new SweepRotate(5),
 						new ProximitySensor(50).addSense(world.getProximate),
@@ -112,9 +116,9 @@
 
 				world.postDecay = postDecay;
 				world.addPlant = addPlant;
-				world.addComposedEntity1 = addComposedEntity1;
-				world.addComposedEntity2 = addComposedEntity2;
-				world.addComposedEntity3 = addComposedEntity3;
+				world.addComposedEntity1 = addScardyCat;
+				world.addComposedEntity2 = addHungry;
+				world.addComposedEntity3 = addSentinal;
 			};
 
 			var go = function(){
