@@ -4,6 +4,7 @@ svg
 	background-color: #EFE;
 	width:640px;
 	height:480px;
+	margin-left: 50px;
 }
 #svg2
 {
@@ -26,4 +27,10 @@ button:hover
 .righty
 {
 	display: inline-block;
+}
+.notes
+{
+	font-family: "Segoe UI Light","Helvitica Neu",sans-serif;
+	display:inline-block;
+	vertical-align:top;
 }

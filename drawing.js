@@ -45,7 +45,9 @@ var drawing = function(){
 			});
 			return l1;
 		},
-		getCone:function(x,y,r,d){
+		getCone:function(x,y,r,d,col){
+			var colour = col;
+			if(!colour) colour = "lightgray";
 			var g = document.createElementNS(xmlns,"g");
 			var rad = support.getRad(d);//deg * (Math.PI/180);
 			//sin A = a/c -> (sin A) * c = a
@@ -54,8 +56,9 @@ var drawing = function(){
 			var y2 = Math.sin(rad)*r;
 			var x22 = Math.cos(-rad)*r;
 			var y22 = Math.sin(-rad)*r;
-			g.appendChild(drawing.getLine(x,y,x2,y2,"lightgray"));
-			g.appendChild(drawing.getLine(x,y,x22,y22,"lightgray"));
+
+			g.appendChild(drawing.getLine(x,y,x2,y2,colour));
+			g.appendChild(drawing.getLine(x,y,x22,y22,colour));
 			return g;
 		},
 		getText:function(x,y,t,c){

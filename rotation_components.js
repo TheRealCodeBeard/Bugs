@@ -12,6 +12,10 @@ RotationComponentBase.prototype.randomRotation = function(entity){
 	}
 };
 
+RotationComponentBase.prototype.smoothRotation = function(entity){
+	entity.rotation += this.rate;
+};
+
 RotationComponentBase.prototype.targetRotation = function(entity,target,dir){
 	var diff = Math.abs(entity.rotation-target.details.angle);
 	var delta = dir * (this.rate<diff?this.rate:diff);
@@ -51,7 +55,7 @@ RandomRotationComponent.prototype.act = function(entity){
 	this.adjust(entity);
 };
 
-
+//hungry
 var RotateTowardsSeen = function(rate){
 	this.rate = rate;
 };
@@ -72,7 +76,46 @@ RotateTowardsSeen.prototype.act = function(entity){
 	this.adjust(entity);
 };
 
+//basic
+var SweepRotate = function(rate){
+	this.rate = rate;
+};
 
+SweepRotate.prototype = new RotationComponentBase();
+
+SweepRotate.prototype.physical = function(){
+	return drawing.getCircle(-5,0,3,"purple");
+};
+
+SweepRotate.prototype.act = function(entity){
+	this.smoothRotation(entity);
+	this.adjust(entity);
+};
+
+//sweep
+var RotateTowardsSeenOrSweep = function(rate){
+	this.rate = rate;
+};
+
+RotateTowardsSeenOrSweep.prototype = new RotationComponentBase();
+
+RotateTowardsSeenOrSweep.prototype.physical = function(){
+	return drawing.getCircle(-5,0,3,"pink");
+};
+
+RotateTowardsSeenOrSweep.prototype.act = function(entity){
+	if(entity.seen && entity.seen.length){
+		var target = entity.seen.getWhereMin('hypotenues','details','distance');//closest
+		this.targetRotation(entity,target,1);
+	} else {//sweep
+		this.smoothRotation(entity);
+	}
+	this.adjust(entity);
+};
+
+
+
+//scared
 var RotateAwayFromSeen = function(rate){
 	this.rate = rate;
 };

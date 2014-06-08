@@ -20,6 +20,9 @@
 		<script type="text/javascript" src="energy_components.js"></script>
 		<script type="text/javascript" src="legs.js"></script>
 		<script type="text/javascript" src="eyes.js"></script>
+		<script type="text/javascript" src="proximity_sensor.js"></script>
+		<script type="text/javascript" src="brain.js"></script>
+		<script type="text/javascript" src="mouth.js"></script>
 		<!--Composed Entities-->
 		<script type="text/javascript" src="composed_entity.js"></script>
 		<!--Main-->
@@ -48,22 +51,59 @@
 					return null;
 				};
 
+				//add mouth part - that bite
+
 				var addComposedEntity1 = function(){
+					var legs = new Legs(1);
+					var brain = new Brain().addRational(function(entity){
+															if(entity.sensed.length) legs.speed = 6;
+															else legs.speed = 1;
+														});
 					var parts = [
 						new RotateAwayFromSeen(5),//new RandomRotationComponent(3),//new SteadyRotationComponent(1),
-						new Legs(1),
+						legs,
 						new Eyes(60,30).addSee(world.getInView),
+						new ProximitySensor(30).addSense(world.getProximate),
+						brain,
 						new InfiniteEnergy()
 					];
 					svg.appendChild(world.addEntity(new ComposedEntity(world.rndX(),world.rndY(),parts)).getGroup());
 				};
 
 				var addComposedEntity2 = function(){
+					var appetite = 110;
+					var energy = new ComponentEnergy(200);
+					var mouth = new Mouth().addSee(world.getInView);
+					var brain = new Brain().addRational(function(entity){
+															if(entity.edible.length){
+																var other = entity.edible[0].entity;
+																if(other.edible)
+																{
+																	if(other.energy && other.takeEnergy){
+																		energy.energy += other.takeEnergy(appetite)*0.9;//10% waste ;-)
+																	}
+																}
+																
+															}
+														});
 					var parts = [
 						new RotateTowardsSeen(10),
 						new Legs(3),
 						new Eyes(60,30).addSee(world.getInView),
-						new ComponentEnergy(200)//new InfiniteEnergy()//new DecreasingEnergy(1000)
+						mouth,
+						brain,
+						energy,
+					];
+					var ce = new ComposedEntity(world.rndX(),world.rndY(),parts);
+					ce.die = world.kill;
+					svg.appendChild(world.addEntity(ce).getGroup());
+				};
+
+				var addComposedEntity3 = function(){
+					var parts = [
+						new SweepRotate(5),
+						new ProximitySensor(50).addSense(world.getProximate),
+						new InfiniteEnergy()
 					];
 					var ce = new ComposedEntity(world.rndX(),world.rndY(),parts);
 					ce.die = world.kill;
@@ -74,12 +114,13 @@
 				world.addPlant = addPlant;
 				world.addComposedEntity1 = addComposedEntity1;
 				world.addComposedEntity2 = addComposedEntity2;
+				world.addComposedEntity3 = addComposedEntity3;
 			};
 
 			var go = function(){
-
 				setup();
 				setInterval(function(){
+					world.entities.perform("grow");
 					world.entities.perform("tick");
 				},100);
 			};
@@ -88,6 +129,7 @@
 				if(event.which===112)world.addPlant();//p
 				else if(event.which===99) world.addComposedEntity1();//c
 				else if(event.which===118) world.addComposedEntity2();//v
+				else if(event.which===98) world.addComposedEntity3();//b
 				else console.log(event.which);
 			};
 
@@ -95,5 +137,11 @@
 	</head>
 	<body onload="go();" >
 		<svg id="svg" width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"></svg>
+		<div class="notes">
+			<div>Press 'c' for a scardy cat</div>
+			<div>Press 'v' for an eater</div>
+			<div>Press 'b' for a scaner</div>
+			<div>Press 'p' for a plant (eaters eat plants otherwise they die)</div>
+		</div>
 	</body>
 </html>

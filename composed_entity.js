@@ -6,6 +6,7 @@ var ComposedEntity = function(x,y,parts){
 	me.rotation = 0;
 	me.size = 7;
 	me.parts = parts;
+	me.scared = false;
 };
 
 ComposedEntity.prototype.getGroup = function(){
