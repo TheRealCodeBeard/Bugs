@@ -70,9 +70,9 @@ var world = function(){
 		rndNear:function(x,y,d){
 			var xcoin = Math.random()>0.5;
 			var ycoin = Math.random()>0.5;
-			var ox = Math.random()*d;
+			var ox = d+Math.random()*d;
 			if(xcoin) ox = -ox;
-			var oy = Math.random()*d;
+			var oy = d+Math.random()*d;
 			if(ycoin) oy = -oy;
 			return {
 				x:x+ox,
