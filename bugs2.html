@@ -21,45 +21,7 @@
 		<script type="text/javascript" src="legs.js"></script>
 		<script type="text/javascript" src="eyes.js"></script>
 		<!--Composed Entities-->
-		<script type="text/javascript">
-
-			var ComposedEntity = function(x,y,parts){
-				var me = this;
-				me.id = support.getID();
-				me.x = x;
-				me.y = y;
-				me.rotation = 0;
-				me.size = 7;
-				me.parts = parts;
-			};
-
-			ComposedEntity.prototype.getGroup = function(){
-				var me = this;
-				var idloc = {x:-me.size-2,y:-me.size-2};
-
-				me.group = drawing.getAGroup();
-				me.group.appendChild(drawing.getCircle(0,0,me.size,"white"));
-				me.group.appendChild(drawing.getText(idloc.x,idloc.y,me.id,"gray"));
-
-				var addPart = function(p) {me.group.appendChild(me.parts[p].physical(me))};
-				for(var i=0;i<me.parts.length;i++){addPart(i);}
-
-				me.update();
-				return me.group;
-			};
-
-			ComposedEntity.prototype.update = function(){
-				var me = this;
-				me.group.setAttribute("transform","translate("+me.x+","+me.y+"),rotate("+me.rotation+")");
-			};
-
-			ComposedEntity.prototype.tick = function(){
-				var me = this;
-				me.parts.performOn("act",me);
-				me.update();
-			};
-
-		</script>
+		<script type="text/javascript" src="composed_entity.js"></script>
 		<!--Main-->
 		<script type="text/javascript">
 
@@ -117,14 +79,7 @@
 			var go = function(){
 
 				setup();
-
-				//the below should be one tick, not a set.
-				//The entity should call, internally, it's composes sensors
 				setInterval(function(){
-					world.entities.perform("look");
-					world.entities.perform("sense");
-					world.entities.perform("move");
-					world.entities.perform("grow");
 					world.entities.perform("tick");
 				},100);
 			};
