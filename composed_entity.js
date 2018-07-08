@@ -34,3 +34,7 @@ ComposedEntity.prototype.tick = function(){
 	me.parts.performOn("act",me);
 	me.update();
 };
+
+ComposedEntity.prototype.getEnergyPart = function(){
+	return this.parts[5];//hack for the moment
+};

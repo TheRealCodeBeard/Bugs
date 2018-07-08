@@ -15,13 +15,14 @@ EnergyLegs.prototype.physical = function(){
 
 EnergyLegs.prototype.act = function(entity){
 	entity.rotation = world.correctRotationForBounds(entity.x,entity.y,entity.size,entity.rotation);
-	if(entity.parts[5]){
-		if (entity.parts[5].energy>56 && entity.parts[5].energy<110){
-			this.speed = 5;
-		} else if (entity.parts[5].energy >= 110) {
-			this.speed = 3;
-		} else  {
+	var energyPart = entity.getEnergyPart();
+	if(energyPart && energyPart.energy){
+		if (energyPart.energy>50 && energyPart.energy<100){
+			this.speed = 6;
+		} else if (energyPart.energy >= 100) {
 			this.speed = 2;
+		} else {
+			this.speed = 3;
 		}
 		this.cost = 0.1 * this.speed;
 	} 
