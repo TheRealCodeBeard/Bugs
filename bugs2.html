@@ -19,6 +19,7 @@
 		<script type="text/javascript" src="rotation_components.js"></script>
 		<script type="text/javascript" src="energy_components.js"></script>
 		<script type="text/javascript" src="legs.js"></script>
+		<script type="text/javascript" src="energyLegs.js"></script>
 		<script type="text/javascript" src="eyes.js"></script>
 		<script type="text/javascript" src="proximity_sensor.js"></script>
 		<script type="text/javascript" src="brain.js"></script>
@@ -103,6 +104,35 @@
 					svg.appendChild(world.addEntity(ce).getGroup());
 				};
 
+				var addHungry2 = function(){
+					var appetite = 110;
+					var energy = new ComponentEnergy(400);
+					var mouth = new Mouth().addSee(world.getInView);
+					var brain = new Brain().addRational(function(entity){
+															if(entity.edible.length){
+																var other = entity.edible[0].entity;
+																if(other.edible)
+																{
+																	if(other.energy && other.takeEnergy){
+																		energy.energy += other.takeEnergy(appetite)*0.9;//10% waste ;-)
+																	}
+																}
+																
+															}
+														});
+					var parts = [
+						new RotateTowardsSeen(10),
+						new EnergyLegs(3),
+						new Eyes(60,30).addSee(world.getInView),
+						mouth,
+						brain,
+						energy,
+					];
+					var ce = new ComposedEntity(world.rndX(),world.rndY(),parts);
+					ce.die = world.kill;
+					svg.appendChild(world.addEntity(ce).getGroup());
+				};
+
 				var addSentinal = function(){
 					var parts = [
 						new SweepRotate(5),
@@ -119,6 +149,7 @@
 				world.addComposedEntity1 = addScardyCat;
 				world.addComposedEntity2 = addHungry;
 				world.addComposedEntity3 = addSentinal;
+				world.addComposedEntity4 = addHungry2;
 			};
 
 			var go = function(){
@@ -134,6 +165,7 @@
 				else if(event.which===99) world.addComposedEntity1();//c
 				else if(event.which===118) world.addComposedEntity2();//v
 				else if(event.which===98) world.addComposedEntity3();//b
+				else if(event.which===111) world.addComposedEntity4();//o
 				else console.log(event.which);
 			};
 
