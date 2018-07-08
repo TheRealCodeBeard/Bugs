@@ -66,7 +66,7 @@ Plant.prototype.grow = function(){
 	else if(me.energy>300)change = 0.75;
 	me.changeEnergy(change);
 
-	if(me.energy>1000 && me.age>365){//over a year old and energetic
+	if(me.energy>1000 && me.age>(365*2)){//over a year old and energetic
 		var childEnergy = Math.random()*me.energy;
 		me.changeEnergy(-(childEnergy/2));
 		me.seed(me,childEnergy);
