@@ -36,5 +36,5 @@ ComposedEntity.prototype.tick = function(){
 };
 
 ComposedEntity.prototype.getEnergyPart = function(){
-	return this.parts[5];//hack for the moment
+	return this.parts.find(part=>(part.energy));
 };
