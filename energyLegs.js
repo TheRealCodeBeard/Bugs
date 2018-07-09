@@ -1,5 +1,3 @@
-//This module is new and so the '5' magic number in the 'act' method of EnergyLegs needs to be fixed
-
 var EnergyLegs = function(speed) {
 	this.speed = speed;
 	this.cost = 0.1 * this.speed;
