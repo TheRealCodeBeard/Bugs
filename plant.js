@@ -63,14 +63,13 @@ Plant.prototype.grow = function(){
 	
 	var change = 0.5;
 	if(me.energy<100)change=0.1;
-	else if(me.energy>300)change = 0.75;
+	else if(me.energy>500)change = 0.75;
 	me.changeEnergy(change);
 
 	if(me.energy>1000 && me.age>(365*2)){//over a year old and energetic
 		var childEnergy = Math.random()*me.energy;
 		me.changeEnergy(-(childEnergy/2));
 		me.seed(me,childEnergy);
-		//me.spawn(Math.random()*(640*0.9),Math.random()*(480*0.9),childEnergy);
 	}
 };
 

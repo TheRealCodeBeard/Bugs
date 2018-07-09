@@ -16,18 +16,18 @@ EnergyLegs.prototype.act = function(entity){
 	var energyPart = entity.getEnergyPart();
 	if(energyPart && energyPart.energy){
 		if (energyPart.energy>25 && energyPart.energy<125){
-			this.speed = 8;
+			entity.speed = 8;
 		} else if (energyPart.energy >= 125 && energyPart.energy < 2000){
-			this.speed = 6;
+			entity.speed = 6;
 		} else if (energyPart.energy >=2000){
-			this.speed = 1;
+			entity.speed = 0;
 		} else {
-			this.speed = 2;
+			entity.speed = 2;
 		}
 	}
-	this.cost = 0.1 * this.speed;
-	if(this.speed){
-		entity.y+=this.speed * Math.sin(support.getRad(entity.rotation));
-		entity.x+=this.speed * Math.cos(support.getRad(entity.rotation));					
+	entity.cost = 0.1 * entity.speed;
+	if(entity.speed){
+		entity.y+=entity.speed * Math.sin(support.getRad(entity.rotation));
+		entity.x+=entity.speed * Math.cos(support.getRad(entity.rotation));					
 	}
 };
