@@ -17,9 +17,9 @@ EnergyLegs.prototype.act = function(entity){
 	if(energyPart && energyPart.energy){
 		if (energyPart.energy>25 && energyPart.energy<125){
 			this.speed = 8;
-		} else if (energyPart.energy >= 125 && energyPart.energy < 1000){
-			this.speed = 4;
-		} else if (energyPart.energy >=1000){
+		} else if (energyPart.energy >= 125 && energyPart.energy < 2000){
+			this.speed = 6;
+		} else if (energyPart.energy >=2000){
 			this.speed = 1;
 		} else {
 			this.speed = 2;
