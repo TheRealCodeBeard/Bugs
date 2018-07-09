@@ -120,8 +120,11 @@
 																
 															}
 														});
+					brain.seenFilter = function(seenEntity){
+						return seenEntity.entity.energy>100;
+					};
 					var parts = [
-						new RotateTowardsSeen(10),
+						new RotateTowardsDecided(10),
 						new EnergyLegs(3),
 						new Eyes(60,30).addSee(world.getInView),
 						mouth,

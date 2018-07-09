@@ -35,6 +35,17 @@ Array.prototype.filter = function(selector){
 	var out = [];
 	for(var i = 0;i<a.length;i++){
 		var filtered = select(i);
+		if(filtered) out.push(a[i]);
+	}
+	return out;
+};
+
+Array.prototype.filterBroken = function(selector){
+	var a = this;
+	var select = function(i){return selector(a[i]);};
+	var out = [];
+	for(var i = 0;i<a.length;i++){
+		var filtered = select(i);
 		if(filtered) out.push(filtered);
 	}
 	return out;

@@ -76,6 +76,33 @@ RotateTowardsSeen.prototype.act = function(entity){
 	this.adjust(entity);
 };
 
+var RotateTowardsDecided = function(rate){
+	this.rate = rate;
+};
+
+RotateTowardsDecided.prototype = new RotationComponentBase();
+
+RotateTowardsDecided.prototype.physical = function(){
+	return drawing.getCircle(-5,0,3,"pink");
+};
+
+RotateTowardsDecided.prototype.act = function(entity){
+	var brainPart = entity.getPartWith("seenFilter");
+	if(brainPart && brainPart.seenFilter && entity.seen && entity.seen.length){
+		var filteredSeen = entity.seen.filter(brainPart.seenFilter);
+		if(filteredSeen && filteredSeen.length){
+			var target = filteredSeen.getWhereMin('hypotenues','details','distance');
+			this.targetRotation(entity,target,1);
+		} else {
+			this.randomRotation(entity);
+		}
+	} else {//just wander
+		this.randomRotation(entity);
+	}
+	this.adjust(entity);
+};
+
+
 //basic
 var SweepRotate = function(rate){
 	this.rate = rate;

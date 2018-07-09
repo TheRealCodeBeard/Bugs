@@ -38,3 +38,7 @@ ComposedEntity.prototype.tick = function(){
 ComposedEntity.prototype.getEnergyPart = function(){
 	return this.parts.find(part=>(part.energy));
 };
+
+ComposedEntity.prototype.getPartWith = function(element){
+	return this.parts.find(part=>part.hasOwnProperty(element));
+}

@@ -43,18 +43,20 @@ var world = function(){
 				could this be speeded up by filtering to an x,y box around the agent
 				entities within that box could then be evaluated in more detail?
 			*/
-			return w.entities.filter(function(entity){
+			
+			return w.entities.filterBroken(function(entity){
 				if(entity.id!=agent.id){
 					var details = support.getRelativeDetails(agent.x,agent.y,agent.radius,entity.x,entity.y);
 					if(details.distance.inside && support.withinSegment(agent,details)) return {entity:entity,details:details};
 				}
 				return null;
 			});
+			
 		},
 		getProximate:function(agent){
 			//Expect agent to have x,y,radius,id
 			//similarly with the above, can the list be filtered really quickly first?
-			return w.entities.filter(function(entity){
+			return w.entities.filterBroken(function(entity){
 				if(entity.id!=agent.id){
 					var details = support.getRelativeDetails(agent.x,agent.y,agent.radius,entity.x,entity.y);
 					if(details.distance.inside)return {entity:entity,details:details};
