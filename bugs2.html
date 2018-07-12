@@ -58,6 +58,7 @@
 					return null;
 				};
 
+
 				var addScardyCat = function(){
 					var legs = new Legs(1);
 					var brain = new Brain().addRational(function(entity){
@@ -104,6 +105,30 @@
 					svg.appendChild(world.addEntity(ce).getGroup());
 				};
 
+				var addPheramone = function(entity,strength){
+					var x = world.rndX();
+					var y = world.rndY();
+					var potency = 300;
+					if(strength) {
+						potency =strength;
+					}
+					if (entity) {
+						x = entity.x;
+						y = entity.y;
+					}
+					var parts = [
+						new DecreasingEnergy(potency)
+					];
+					var ce = new ComposedEntity(x,y,parts);
+					ce.die = world.kill;
+					ce.smellsNice = true;
+					ce.opacity = 0.1;
+					ce.stroke = "white";
+					ce.colour = "yellow";
+					ce.showText = false;
+					plantLayer.appendChild(world.addEntity(ce).getGroup());
+				};
+
 				var addHungry2 = function(){
 					var appetite = 110;
 					var energy = new ComponentEnergy(150);
@@ -115,18 +140,24 @@
 																{
 																	if(other.energy && other.takeEnergy){
 																		energy.energy += other.takeEnergy(appetite)*0.9;//10% waste ;-)
+																		addPheramone(entity,200);
+																		setTimeout(function(){addPheramone(entity,200)},500);
+																		setTimeout(function(){addPheramone(entity,200)},1000);
+																		setTimeout(function(){addPheramone(entity,200)},1500);
+																		setTimeout(function(){addPheramone(entity,200)},2000);
 																	}
 																}
 																
 															}
 														});
 					brain.seenFilter = function(seenEntity){
-						return seenEntity.entity.energy>100;
+						return seenEntity.entity.smellsNice || seenEntity.entity.edible;
 					};
+					var eyeAngle = 15 + (Math.random() * 20);
 					var parts = [
 						new RotateTowardsDecided(10),
 						new EnergyLegs(3),
-						new Eyes(60,30).addSee(world.getInView),
+						new Eyes(60,eyeAngle).addSee(world.getInView),
 						mouth,
 						brain,
 						energy,
@@ -153,6 +184,7 @@
 				world.addComposedEntity2 = addHungry;
 				world.addComposedEntity3 = addSentinal;
 				world.addComposedEntity4 = addHungry2;
+				world.addComposedEntity5 = addPheramone;
 			};
 
 			var go = function(){
@@ -169,6 +201,7 @@
 				else if(event.which===118) world.addComposedEntity2();//v
 				else if(event.which===98) world.addComposedEntity3();//b
 				else if(event.which===111) world.addComposedEntity4();//o
+				else if(event.which===109) world.addComposedEntity5();//m
 				else console.log(event.which);
 			};
 

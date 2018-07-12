@@ -14,7 +14,7 @@ var DecreasingEnergy = function(amount){
 };
 
 DecreasingEnergy.prototype.physical = function(){
-	this.text = drawing.getText(8,14,this.energy); 
+	this.text = drawing.getText(8,14,this.energy);
 	return this.text;
 };
 

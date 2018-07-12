@@ -7,6 +7,10 @@ var ComposedEntity = function(x,y,parts){
 	me.size = 7;
 	me.parts = parts;
 	me.scared = false;
+	me.colour = "white";
+	me.stroke = "black";
+	me.showText = true;
+	me.opacity = 1.0;
 };
 
 ComposedEntity.prototype.getGroup = function(){
@@ -14,9 +18,10 @@ ComposedEntity.prototype.getGroup = function(){
 	var idloc = {x:-me.size-2,y:-me.size-2};
 
 	me.group = drawing.getAGroup();
-	me.group.appendChild(drawing.getCircle(0,0,me.size,"white"));
-	me.group.appendChild(drawing.getText(idloc.x,idloc.y,me.id,"gray"));
-
+	me.group.appendChild(drawing.getCircle(0,0,me.size,me.colour,me.opacity,me.stroke));
+	if(me.showText){
+		me.group.appendChild(drawing.getText(idloc.x,idloc.y,me.id,"gray"));
+	}
 	var addPart = function(p) {me.group.appendChild(me.parts[p].physical(me))};
 	for(var i=0;i<me.parts.length;i++){addPart(i);}
 

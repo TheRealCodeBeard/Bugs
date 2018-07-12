@@ -19,11 +19,14 @@ var drawing = function(){
 			im.setAttributeNS(xlink,"xlink:href","bug.png");
 			return im;
 		},
-		getCircle:function(x,y,r,col){
+		getCircle:function(x,y,r,col,op,stroke){
 			var circle = document.createElementNS(xmlns,"circle");
+			if(!op) {op=1.0;}
+			if(!stroke) {stroke="black";}
 			set(circle,{
 				"cx":x,"cy":y,"r":r,
-				"stroke":"black","stroke-width":1,"fill":col
+				"stroke":stroke,"stroke-width":1,"fill":col,
+				"fill-opacity":op
 			});
 			return circle;
 		},
