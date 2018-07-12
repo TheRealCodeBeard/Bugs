@@ -44,7 +44,7 @@
 				};
 
 				var addPlant = function(x,y,e){
-					if(world.entitiesCount()<100){
+					if(world.entitiesCount()<200){
 						var p = null;
 						if(x&&y&&e)p = new Plant(x,y,e);
 						else p = new Plant(world.rndX(),world.rndY(),Math.random()*750);
@@ -116,21 +116,21 @@
 						x = entity.x;
 						y = entity.y;
 					}
-					var parts = [
-						new DecreasingEnergy(potency)
-					];
+					var eng = new DecreasingEnergy(potency);
+					eng.colour = "none";
+					var parts = [eng];
 					var ce = new ComposedEntity(x,y,parts);
 					ce.die = world.kill;
 					ce.smellsNice = true;
 					ce.opacity = 0.1;
-					ce.stroke = "white";
+					ce.stroke = "none";
 					ce.colour = "yellow";
 					ce.showText = false;
 					plantLayer.appendChild(world.addEntity(ce).getGroup());
 				};
 
 				var addHungry2 = function(){
-					var appetite = 110;
+					var appetite = 50 +(Math.random()*150);
 					var energy = new ComponentEnergy(150);
 					var mouth = new Mouth().addSee(world.getInView);
 					var brain = new Brain().addRational(function(entity){
@@ -140,11 +140,10 @@
 																{
 																	if(other.energy && other.takeEnergy){
 																		energy.energy += other.takeEnergy(appetite)*0.9;//10% waste ;-)
-																		addPheramone(entity,200);
-																		setTimeout(function(){addPheramone(entity,200)},500);
-																		setTimeout(function(){addPheramone(entity,200)},1000);
-																		setTimeout(function(){addPheramone(entity,200)},1500);
-																		setTimeout(function(){addPheramone(entity,200)},2000);
+																		for(var i=0;i<8;i++){
+																			setTimeout(function(){addPheramone(entity,400-(i*50))},250 * i);
+																		}
+																		
 																	}
 																}
 																
@@ -154,10 +153,11 @@
 						return seenEntity.entity.smellsNice || seenEntity.entity.edible;
 					};
 					var eyeAngle = 15 + (Math.random() * 20);
+					var eyeRadius = 20 + (Math.random() * 50);
 					var parts = [
 						new RotateTowardsDecided(10),
 						new EnergyLegs(3),
-						new Eyes(60,eyeAngle).addSee(world.getInView),
+						new Eyes(eyeRadius,eyeAngle).addSee(world.getInView),
 						mouth,
 						brain,
 						energy,
