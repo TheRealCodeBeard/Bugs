@@ -1,5 +1,6 @@
 var EnergyLegs = function(speed) {
-	this.speed = speed;
+	this.baseSpeed = speed;
+	this.speed = this.baseSpeed;
 	this.cost = 0.1 * this.speed;
 };
 
@@ -16,13 +17,13 @@ EnergyLegs.prototype.act = function(entity){
 	var energyPart = entity.getEnergyPart();
 	if(energyPart && energyPart.energy){
 		if (energyPart.energy>25 && energyPart.energy<125){
-			entity.speed = 8;
+			entity.speed = this.baseSpeed * 2;
 		} else if (energyPart.energy >= 125 && energyPart.energy < 2000){
-			entity.speed = 6;
+			entity.speed = this.baseSpeed * 1.5;
 		} else if (energyPart.energy >=2000){
 			entity.speed = 0;
 		} else {
-			entity.speed = 2;
+			entity.speed = this.baseSpeed * 0.5;
 		}
 	}
 	entity.cost = 0.1 * entity.speed;
