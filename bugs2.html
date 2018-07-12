@@ -39,7 +39,7 @@
 				};
 
 				var addSeed = function(plant,energy){
-					var loc = world.rndNear(plant.x,plant.y,plant.size);
+					var loc = world.rndNear(plant.x,plant.y,plant.size*2);
 					addPlant(loc.x,loc.y,energy);
 				};
 
@@ -140,10 +140,11 @@
 																{
 																	if(other.energy && other.takeEnergy){
 																		energy.energy += other.takeEnergy(appetite)*0.9;//10% waste ;-)
-																		for(var i=0;i<8;i++){
-																			setTimeout(function(){addPheramone(entity,400-(i*50))},250 * i);
+																		if(entity.speed>0){
+																			for(var i=0;i<8;i++){
+																				setTimeout(function(){addPheramone(entity,400-(i*50))},250 * i);
+																			}
 																		}
-																		
 																	}
 																}
 																
