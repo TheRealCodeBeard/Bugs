@@ -41,7 +41,7 @@ ComposedEntity.prototype.tick = function(){
 };
 
 ComposedEntity.prototype.getEnergyPart = function(){
-	return this.parts.find(part=>(part.energy));
+	return this.getPartWith("energy");
 };
 
 ComposedEntity.prototype.getPartWith = function(element){

@@ -44,7 +44,7 @@
 				};
 
 				var addPlant = function(x,y,e){
-					if(world.entitiesCount()<200){
+					if(world.entitiesCount()<400){
 						var p = null;
 						if(x&&y&&e)p = new Plant(x,y,e);
 						else p = new Plant(world.rndX(),world.rndY(),Math.random()*750);
@@ -129,25 +129,67 @@
 					plantLayer.appendChild(world.addEntity(ce).getGroup());
 				};
 
-				var addHungry2 = function(){
+				var addEgg = function(entity){
+					if(entity){
+						var eng = new DecreasingEnergy(2000);
+						eng.colour = "turquoise";
+						var parts = [eng];
+						var ce = new ComposedEntity(entity.x,entity.y,parts);
+						ce.die = world.kill;
+						ce.smellsNice = true;
+						ce.colour = "turquoise";
+						ce.stroke = "blue";
+						ce.egg = true;
+						ce.showText=false;
+						plantLayer.appendChild(world.addEntity(ce).getGroup());
+					}
+				};
+
+				var addHungry2 = function(x,y){
+					x = x?x:world.rndX();
+					y = y?y:world.rndY();
 					var appetite = 50 +(Math.random()*150);
 					var energy = new ComponentEnergy(150);
 					var mouth = new Mouth().addSee(world.getInView);
 					var brain = new Brain().addRational(function(entity){
 															if(entity.edible.length){
-																var other = entity.edible[0].entity;
-																if(other.edible)
-																{
-																	if(other.energy && other.takeEnergy){
-																		energy.energy += other.takeEnergy(appetite)*0.9;//10% waste ;-)
-																		if(entity.speed>0){
-																			for(var i=0;i<8;i++){
-																				setTimeout(function(){addPheramone(entity,400-(i*50))},250 * i);
+																var filtered = entity.edible.filter(e=>e.entity.edible||e.entity.egg);
+																if(filtered.length){
+																	var other = filtered[0].entity;
+																	if(other.edible)
+																	{
+																		if(other.energy && other.takeEnergy){
+																			energy.energy += other.takeEnergy(appetite)*0.9;//10% waste ;-)
+																			if(entity.speed>0){
+																				for(var i=0;i<6;i++){
+																					setTimeout(function(){addPheramone(entity,300-(i*50))},250 * i);
+																				}
 																			}
 																		}
+																	} else if (entity.gender===1 && other.egg){
+																		console.log("egg fertilised");
+																		other.egg = false;
+																		other.die = function(){
+																			addHungry2(other.x,other.y);
+																			world.kill(other);
+																		}
+																		other.getPartWith("energy").energy = 100;
 																	}
 																}
-																
+															} 
+															if(entity.gender===2)
+															{
+																var ep = entity.getPartWith("energy");
+																if(ep.energy>500 && Math.random()>0.5){
+																	if(!entity.laid){
+																		entity.laid=true;
+																		setTimeout(function(){
+																			ep.energy-=250;
+																			addEgg(entity);
+																		},1000);
+																		setTimeout(function(){entity.laid=false;},10000);
+																	}
+																}
 															}
 														});
 					brain.seenFilter = function(seenEntity){
@@ -163,7 +205,12 @@
 						brain,
 						energy,
 					];
-					var ce = new ComposedEntity(world.rndX(),world.rndY(),parts);
+					var ce = new ComposedEntity(x,y,parts);
+					ce.gender = Math.round(1+(Math.random()-0.1),0);
+					if(ce.gender ===2){
+						ce.colour="turquoise";
+						ce.laid = false;
+					}
 					ce.die = world.kill;
 					svg.appendChild(world.addEntity(ce).getGroup());
 				};
@@ -190,6 +237,11 @@
 
 			var go = function(){
 				setup();
+				for(var i=0;i<10;i++)
+				{
+					world.addPlant();
+					world.addComposedEntity4();
+				}
 				setInterval(function(){
 					world.entities.perform("grow");
 					world.entities.perform("tick");
@@ -211,10 +263,10 @@
 	<body onload="go();" >
 		<svg id="svg" width="640" height="480" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1"></svg>
 		<div class="notes">
-			<div>Press 'c' for a scardy cat</div>
-			<div>Press 'v' for an eater</div>
+			<!--<div>Press 'c' for a scardy cat</div>
+			<div>Press 'v' for an eater</div>-->
 			<div>Press 'o' for an energy bound eater</div>
-			<div>Press 'b' for a scanner</div>
+			<!--<div>Press 'b' for a scanner</div>-->
 			<div>Press 'p' for a plant (eaters eat plants otherwise they die)</div>
 		</div>
 	</body>
